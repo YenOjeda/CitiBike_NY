@@ -1,0 +1,76 @@
+PROMEDIO DE VIAJES POR DIA
+
+SELECT
+  fecha,
+  AVG(numero_de_viajes) AS promedio_numero_de_viajes_por_dia
+FROM (
+  SELECT
+    DATE(start_date) AS fecha,
+    COUNT(bikeid) AS numero_de_viajes
+  FROM `citibike-412116.citibike.TablaGeneral`
+  GROUP BY fecha
+)
+GROUP BY fecha;
+
+TOTAL DE VIAJES ACUMULADOS
+
+SELECT
+  SUM(numero_de_viajes) AS total_de_viajes
+FROM (
+  SELECT
+    DATE(start_date) AS fecha,
+    COUNT(bikeid) AS numero_de_viajes
+  FROM `citibike-412116.citibike.TablaGeneral`
+  GROUP BY fecha
+)
+
+
+TOTAL DE VIAJES POR USUARIO
+
+SELECT
+  gender,
+  age,
+  customer_plan,
+  COUNT(*) AS total_viajes_por_usuario
+FROM
+  `citibike-412116.citibike.TablaGeneral`
+GROUP BY
+  gender,
+  age,
+  customer_plan
+ORDER BY
+  gender,
+  age,
+  customer_plan;
+
+TABLA VIEW
+
+SELECT 
+tripduration / 60 AS tripduration_minutes,
+FORMAT_DATETIME('%F', starttime) AS start_date,
+FORMAT_DATETIME('%T', starttime) AS start_time,
+FORMAT_DATETIME('%F', stoptime) AS stop_date,
+FORMAT_DATETIME('%T', stoptime) AS stop_time,
+start_station_id,
+start_station_name,
+start_station_latitude,
+start_station_longitude,
+end_station_id,
+end_station_name,
+end_station_latitude,
+end_station_longitude,
+bikeid,
+usertype,
+birth_year,
+2023 - birth_year AS age,
+gender,
+customer_plan
+FROM `bigquery-public-data.new_york_citibike.citibike_trips` 
+WHERE (birth_year IS NULL OR birth_year IS NOT NULL) AND tripduration IS NOT NULL; 
+
+
+TABLA GENERAL
+
+SELECT *, SUBSTR(start_date, 1, 4) AS year
+FROM `citibike-412116.citibike.CitiNy`
+WHERE (age <= 90);
